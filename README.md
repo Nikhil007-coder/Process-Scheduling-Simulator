@@ -53,11 +53,11 @@ cpu_scheduling/
 * Generates a Gantt Chart for process execution visualization.
 
 
-🔜 Planned Algorithms
+## 🔜 Planned Algorithms
 
-Round Robin (RR)
+### Round Robin (RR)
 
-Multilevel Queue Scheduling
+### Multilevel Queue Scheduling
 
 
 
