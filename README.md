@@ -12,46 +12,48 @@ More scheduling algorithms will be added progressively.
 cpu_scheduling/
 ├── FCFS.cpp
 ├── SJF.cpp
+├── SRTF.cpp
+├── Priority.cpp
 └── README.md
-
 
 
 ---
 
 ## ✅ Implemented Algorithms
-1️⃣ First Come First Serve (FCFS)
 
-File: FCFS.cpp
+### 1️⃣ First Come First Serve (FCFS)
 
-Schedules processes based on arrival time
+* Schedules processes based on arrival time.
+* Calculates Start Time (ST), Completion Time (CT), Turnaround Time (TAT), and Waiting Time (WT).
+* Displays average WT and TAT.
+* Generates a Gantt Chart and handles CPU idle time.
 
-Calculates ST, CT, TAT, WT
+### 2️⃣ Shortest Job First (SJF) – Non-Preemptive
 
-Displays average WT & TAT
+* Selects the process with the shortest burst time among available processes.
+* Executes processes non-preemptively.
+* Calculates CT, TAT, and WT.
+* Displays average WT and TAT.
+* Generates a Gantt Chart.
 
-Generates Gantt Chart
+### 3️⃣ Shortest Remaining Time First (SRTF)
 
-Handles CPU idle time
+* Preemptive version of SJF.
+* Continuously selects the process with the shortest remaining burst time.
+* Supports process preemption on arrival of shorter jobs.
+* Calculates CT, TAT, and WT.
+* Generates a Gantt Chart and performance statistics.
 
-2️⃣ Shortest Job First (SJF) – Non-Preemptive
+### 4️⃣ Priority Scheduling
 
-File: SJF.cpp
+* Schedules processes according to assigned priority levels.
+* Higher-priority processes are executed first.
+* Calculates CT, TAT, and WT.
+* Displays average WT and TAT.
+* Generates a Gantt Chart for process execution visualization.
 
-Selects process with minimum burst time
-
-Non-preemptive execution
-
-Calculates ST, CT, TAT, WT
-
-Displays average WT & TAT
-
-Generates Gantt Chart
 
 🔜 Planned Algorithms
-
-Shortest Remaining Time First (SRTF)
-
-Priority Scheduling
 
 Round Robin (RR)
 
