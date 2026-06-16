@@ -59,9 +59,30 @@ Round Robin (RR)
 
 Multilevel Queue Scheduling
 
-▶️ How to Run
+
+
+## 🚀 How to Run
+
+Compile and execute any scheduling algorithm using g++:
+
+```bash
 g++ FCFS.cpp -o fcfs
 ./fcfs
 
 g++ SJF.cpp -o sjf
 ./sjf
+
+g++ SRTF.cpp -o srtf
+./srtf
+
+g++ Priority.cpp -o priority
+./priority
+```
+
+### Requirements
+
+* C++ Compiler (g++)
+* Terminal or Command Prompt
+
+Each program accepts process details as input and displays the scheduling table, performance metrics, and Gantt Chart.
+
