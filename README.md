@@ -61,7 +61,9 @@ cpu_scheduling/
 
 
 
-## 🚀 How to Run
+
+
+### 🚀 How to Run
 
 Compile and execute any scheduling algorithm using g++:
 
