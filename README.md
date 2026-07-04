@@ -1,65 +1,141 @@
-﻿# Process-Scheduling-Simulator
+# Process Scheduling Simulator
 
-This directory contains implementations of **CPU scheduling algorithms**
-written in **C++** as part of Operating Systems learning and practice.
+This repository contains implementations of **CPU Scheduling Algorithms** written in **C++** as part of Operating Systems learning and practice.
 
-🚧 **Status:** Work in Progress  
-More scheduling algorithms will be added progressively.
+🚀 **Status:** Active Development
 
 ---
 
 ## 📂 Folder Structure
+
+```text
 cpu_scheduling/
 ├── FCFS.cpp
 ├── SJF.cpp
+├── SRTF.cpp
+├── Priority.cpp
+├── RoundRobin.cpp
 └── README.md
-
-
+```
 
 ---
 
 ## ✅ Implemented Algorithms
-1️⃣ First Come First Serve (FCFS)
 
-File: FCFS.cpp
+### 1️⃣ First Come First Serve (FCFS)
 
-Schedules processes based on arrival time
+**File:** `FCFS.cpp`
 
-Calculates ST, CT, TAT, WT
+- Schedules processes based on arrival time
+- Calculates Start Time (ST), Completion Time (CT), Turnaround Time (TAT), and Waiting Time (WT)
+- Displays Average WT & Average TAT
+- Generates Gantt Chart
+- Handles CPU Idle Time
 
-Displays average WT & TAT
+---
 
-Generates Gantt Chart
+### 2️⃣ Shortest Job First (SJF) – Non-Preemptive
 
-Handles CPU idle time
+**File:** `SJF.cpp`
 
-2️⃣ Shortest Job First (SJF) – Non-Preemptive
+- Selects the process with the shortest burst time
+- Non-preemptive execution
+- Calculates ST, CT, TAT, and WT
+- Displays Average WT & Average TAT
+- Generates Gantt Chart
 
-File: SJF.cpp
+---
 
-Selects process with minimum burst time
+### 3️⃣ Shortest Remaining Time First (SRTF)
 
-Non-preemptive execution
+**File:** `SRTF.cpp`
 
-Calculates ST, CT, TAT, WT
+- Preemptive version of SJF
+- Selects the process with the shortest remaining burst time
+- Supports process preemption
+- Calculates CT, TAT, and WT
+- Displays Average WT & Average TAT
+- Generates Gantt Chart
 
-Displays average WT & TAT
+---
 
-Generates Gantt Chart
+### 4️⃣ Priority Scheduling
 
-🔜 Planned Algorithms
+**File:** `Priority.cpp`
 
-Shortest Remaining Time First (SRTF)
+- Schedules processes based on priority
+- Calculates CT, TAT, and WT
+- Displays Average WT & Average TAT
+- Generates Gantt Chart
 
-Priority Scheduling
+---
 
-Round Robin (RR)
+### 5️⃣ Round Robin (RR)
 
-Multilevel Queue Scheduling
+**File:** `RoundRobin.cpp`
 
-▶️ How to Run
+- Executes processes using a user-defined Time Quantum
+- Fair CPU allocation among all processes
+- Calculates CT, TAT, and WT
+- Displays Average WT & Average TAT
+- Generates Gantt Chart
+
+---
+
+## 🔜 Planned Algorithms
+
+- Multilevel Queue Scheduling
+
+---
+
+## ▶️ How to Run
+
+### FCFS
+
+```bash
 g++ FCFS.cpp -o fcfs
 ./fcfs
+```
 
+### SJF
+
+```bash
 g++ SJF.cpp -o sjf
 ./sjf
+```
+
+### SRTF
+
+```bash
+g++ SRTF.cpp -o srtf
+./srtf
+```
+
+### Priority Scheduling
+
+```bash
+g++ Priority.cpp -o priority
+./priority
+```
+
+### Round Robin
+
+```bash
+g++ RoundRobin.cpp -o rr
+./rr
+```
+
+---
+
+## 📌 Future Improvements
+
+- Interactive menu-driven simulator
+- Better Gantt Chart visualization
+- Performance comparison between scheduling algorithms
+- Export scheduling results
+
+---
+
+## 🤝 Contributing
+
+Contributions, suggestions, and improvements are welcome. Feel free to fork the repository and submit a pull request.
