@@ -1,79 +1,81 @@
+
 #include <iostream>
 #include <vector>
+#include <iomanip>
+#include <algorithm>
 using namespace std;
 
 struct Process {
-    int pid;
-    int burstTime;
-    int remainingTime;
-    int waitingTime;
-    int turnaroundTime;
+    int pid, bt, rt, wt = 0, tat = 0;
 };
 
 int main() {
     int n, quantum;
 
     cout << "Enter number of processes: ";
-    cin >> n;
 
-    vector<Process> processes(n);
+    if (!(cin >> n) || n <= 0 || n > 100)
+        return 1;
 
-    cout << "Enter Burst Time of each process:\n";
+    vector<Process> p(n);
+
     for (int i = 0; i < n; i++) {
-        processes[i].pid = i + 1;
+        p[i].pid = i + 1;
 
-        cout << "P" << i + 1 << ": ";
-        cin >> processes[i].burstTime;
+        cout << "Enter Burst Time of P" << i + 1 << ": ";
 
-        processes[i].remainingTime = processes[i].burstTime;
+        if (!(cin >> p[i].bt) || p[i].bt <= 0)
+            return 1;
+
+        p[i].rt = p[i].bt;
     }
 
     cout << "Enter Time Quantum: ";
-    cin >> quantum;
 
-    int currentTime = 0;
-    bool done;
+    if (!(cin >> quantum) || quantum <= 0)
+        return 1;
 
-    do {
-        done = true;
+    int time = 0, completed = 0;
+    double totalWT = 0, totalTAT = 0;
 
-        for (int i = 0; i < n; i++) {
-            if (processes[i].remainingTime > 0) {
-                done = false;
+    cout << "\nGantt Chart:\n";
 
-                if (processes[i].remainingTime > quantum) {
-                    currentTime += quantum;
-                    processes[i].remainingTime -= quantum;
-                } else {
-                    currentTime += processes[i].remainingTime;
+    while (completed < n) {
+        for (auto& x : p) {
+            if (x.rt == 0)
+                continue;
 
-                    processes[i].turnaroundTime = currentTime;
-                    processes[i].waitingTime =
-                        processes[i].turnaroundTime - processes[i].burstTime;
+            int run = min(quantum, x.rt);
+            int start = time;
 
-                    processes[i].remainingTime = 0;
-                }
+            time += run;
+            x.rt -= run;
+
+            cout << "| P" << x.pid
+                 << " [" << start << "-" << time << "] ";
+
+            if (x.rt == 0) {
+                x.tat = time;
+                x.wt = x.tat - x.bt;
+                completed++;
             }
         }
-
-    } while (!done);
-
-    double avgWT = 0, avgTAT = 0;
-
-    cout << "\nProcess\tBurst\tWaiting\tTurnaround\n";
-
-    for (int i = 0; i < n; i++) {
-        cout << "P" << processes[i].pid << "\t"
-             << processes[i].burstTime << "\t"
-             << processes[i].waitingTime << "\t"
-             << processes[i].turnaroundTime << endl;
-
-        avgWT += processes[i].waitingTime;
-        avgTAT += processes[i].turnaroundTime;
     }
 
-    cout << "\nAverage Waiting Time = " << avgWT / n << endl;
-    cout << "Average Turnaround Time = " << avgTAT / n << endl;
+    cout << "|\n\nPID\tBT\tWT\tTAT\n";
+
+    for (const auto& x : p) {
+        cout << "P" << x.pid << "\t"
+             << x.bt << "\t" << x.wt << "\t"
+             << x.tat << "\n";
+
+        totalWT += x.wt;
+        totalTAT += x.tat;
+    }
+
+    cout << fixed << setprecision(2);
+    cout << "\nAverage Waiting Time: " << totalWT / n;
+    cout << "\nAverage Turnaround Time: " << totalTAT / n << "\n";
 
     return 0;
 }

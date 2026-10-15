@@ -1,54 +1,93 @@
+
 #include <iostream>
+#include <vector>
+#include <iomanip>
 using namespace std;
 
 struct Process {
-    int id,bt,pr,wt,tat;
+    int pid, at, bt, priority, st, ct, tat, wt;
+    bool done = false;
 };
 
 int main() {
     int n;
-    Process p[20], temp;
-    float avg_wt = 0, avg_tat = 0;
-
     cout << "Enter number of processes: ";
-    cin >> n;
+
+    if (!(cin >> n) || n <= 0 || n > 100)
+        return 1;
+
+    vector<Process> p(n);
 
     for (int i = 0; i < n; i++) {
-        p[i].id = i + 1;
-        cout << "Enter Burst Time and Priority for P" << p[i].id << ": ";
-        cin >> p[i].bt >> p[i].pr;
+        p[i].pid = i + 1;
+
+        cout << "Enter AT, BT and Priority of P"
+             << i + 1 << ": ";
+
+        if (!(cin >> p[i].at >> p[i].bt >> p[i].priority) ||
+            p[i].at < 0 || p[i].bt <= 0)
+            return 1;
     }
 
-    // Sort processes based on Priority (Bubble Sort)
-    for (int i = 0; i < n - 1; i++) {
-        for (int j = 0; j < n - i - 1; j++) {
-            if (p[j].pr > p[j + 1].pr) {
-                temp = p[j];
-                p[j] = p[j + 1];
-                p[j + 1] = temp;
+    int time = 0, completed = 0;
+    double totalWT = 0, totalTAT = 0;
+
+    while (completed < n) {
+        int idx = -1;
+
+        for (int i = 0; i < n; i++) {
+            if (p[i].done || p[i].at > time)
+                continue;
+
+            if (idx == -1 ||
+                p[i].priority < p[idx].priority ||
+                (p[i].priority == p[idx].priority &&
+                 p[i].at < p[idx].at) ||
+                (p[i].priority == p[idx].priority &&
+                 p[i].at == p[idx].at &&
+                 p[i].pid < p[idx].pid)) {
+                idx = i;
             }
         }
+
+        if (idx == -1) {
+            int next = -1;
+
+            for (int i = 0; i < n; i++)
+                if (!p[i].done &&
+                    (next == -1 || p[i].at < next))
+                    next = p[i].at;
+
+            time = next;
+            continue;
+        }
+
+        p[idx].st = time;
+        p[idx].ct = time + p[idx].bt;
+        p[idx].tat = p[idx].ct - p[idx].at;
+        p[idx].wt = p[idx].tat - p[idx].bt;
+
+        time = p[idx].ct;
+        p[idx].done = true;
+        completed++;
     }
 
-    // Calculation
-    p[0].wt = 0;
-    p[0].tat = p[0].bt;
-    for (int i = 1; i < n; i++) {
-        p[i].wt = p[i - 1].wt + p[i - 1].bt;
-        p[i].tat = p[i].wt + p[i].bt;
+    cout << "\nPID\tAT\tBT\tPR\tST\tCT\tTAT\tWT\n";
+
+    for (const auto& x : p) {
+        cout << "P" << x.pid << "\t"
+             << x.at << "\t" << x.bt << "\t"
+             << x.priority << "\t" << x.st << "\t"
+             << x.ct << "\t" << x.tat << "\t"
+             << x.wt << "\n";
+
+        totalWT += x.wt;
+        totalTAT += x.tat;
     }
 
-    // Output Table
-    cout << "\nPID\tBT\tPriority\tWT\tTAT\n";
-    for (int i = 0; i < n; i++) {
-        avg_wt += p[i].wt;
-        avg_tat += p[i].tat;
-        cout << "P" << p[i].id << "\t" << p[i].bt << "\t" << p[i].pr 
-             << "\t\t" << p[i].wt << "\t" << p[i].tat << endl;
-    }
-
-    cout << "\nAverage Waiting Time: " << avg_wt / n;
-    cout << "\nAverage Turnaround Time: " << avg_tat / n << endl;
+    cout << fixed << setprecision(2);
+    cout << "\nAverage Waiting Time: " << totalWT / n;
+    cout << "\nAverage Turnaround Time: " << totalTAT / n << "\n";
 
     return 0;
 }

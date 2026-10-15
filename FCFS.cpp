@@ -1,129 +1,79 @@
-// \\ FCFS CPU SCHEDULING IMPLEMENTATION
-#include<iostream>
-#include<algorithm>
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iomanip>
 using namespace std;
 
-struct Process{
-    int pid;
-    int Start_time;
-    int Arr_time;
-    int Burst_time;
-    int Comp_time;
-    int TurnAround_time;
-    int Waiting_time;
+struct Process {
+    int pid, at, bt, st, ct, tat, wt;
 };
 
 bool compare(Process a, Process b) {
-    if (a.Arr_time == b.Arr_time)
+    if (a.at == b.at)
         return a.pid < b.pid;
-    return a.Arr_time < b.Arr_time;
+    return a.at < b.at;
 }
 
-void findCompTime(Process pro[], int n) {
-    pro[0].Start_time = pro[0].Arr_time;
-    pro[0].Comp_time = pro[0].Start_time + pro[0].Burst_time;
-
-    for (int i = 1; i < n; i++) {
-        pro[i].Start_time = max(pro[i - 1].Comp_time, pro[i].Arr_time);
-        pro[i].Comp_time = pro[i].Start_time + pro[i].Burst_time;
-    }
-}
-
-void findTurnAroundTime(Process pro[],int n){
-    for (int i = 0; i < n; i++)
-    {
-        pro[i].TurnAround_time=pro[i].Comp_time - pro[i].Arr_time;
-    }
-    
-}
-
-void findWaitingTime(Process pro[],int n){
-    pro[0].Waiting_time=0;
-    for (int i = 1; i < n; i++)
-    {
-        pro[i].Waiting_time = pro[i].Comp_time - pro[i].Arr_time - pro[i].Burst_time;
-    }
-    
-}
-
-void findFCFS(Process pro[],int n){
-        sort(pro, pro + n, compare);
-        findCompTime(pro,n);
-        findTurnAroundTime(pro,n);
-        findWaitingTime(pro,n);
-}
-
-void printFCFS(Process pro[], int n) {
-    cout << "\n\n--------- FCFS SCHEDULING ---------\n\n";
-    cout << "PID\tAT\tBT\tST\tCT\tTAT\tWT\n";
-
-    for (int i = 0; i < n; i++) {
-        cout << "P" << pro[i].pid << "\t"
-             << pro[i].Arr_time << "\t"
-             << pro[i].Burst_time << "\t"
-             << pro[i].Start_time << "\t"
-             << pro[i].Comp_time << "\t"
-             << pro[i].TurnAround_time << "\t"
-             << pro[i].Waiting_time << "\n";
-    }
-}
-
-void printGanttChart(Process pro[], int n) {
-    cout << "\nGantt Chart:\n\n";
-
-    cout << "|";
-    if (pro[0].Start_time > 0)
-        cout << " Idle |";
-
-    for (int i = 0; i < n; i++) {
-        cout << "  P" << pro[i].pid << "  |";
-    }
-
-    cout << "\n";
-
-    cout << "0";
-    if (pro[0].Start_time > 0)
-        cout << "     " << pro[0].Start_time;
-
-    for (int i = 0; i < n; i++) {
-        cout << "     " << pro[i].Comp_time;
-    }
-    cout << "\n";
-}
-
-void input(Process pro[],int n){
-    for (int i = 0; i < n; i++)
-    {   pro[i].pid=i+1;
-        cout<<"Enter Arrival and Burst time of process P"<<pro[i].pid<<":";
-        cin>>pro[i].Arr_time>>pro[i].Burst_time;
-        cout<<endl;
-    }
-    
-}
-
-int main(){
+int main() {
     int n;
-    cout<<"Enter No. Of Process:";
-    cin>>n;
-
-    Process* pro = new Process[n];
-
-    input(pro,n);
-    findFCFS(pro,n);
-    printFCFS(pro,n);
-    float avgWT = 0, avgTAT = 0;
-    for (int i = 0; i < n; i++) {
-    avgWT += pro[i].Waiting_time;
-    avgTAT += pro[i].TurnAround_time;
+    cout << "Enter number of processes: ";
+    if (!(cin >> n) || n <= 0 || n > 100) {
+        cout << "Invalid process count.\n";
+        return 1;
     }
 
-    cout << "\nAverage Waiting Time = " << avgWT / n;
-    cout << "\nAverage Turnaround Time = " << avgTAT / n << endl;
+    vector<Process> p(n);
 
-    printGanttChart(pro,n);
+    for (int i = 0; i < n; i++) {
+        p[i].pid = i + 1;
+        cout << "Enter Arrival Time and Burst Time of P"
+             << p[i].pid << ": ";
 
-    delete[] pro;
+        if (!(cin >> p[i].at >> p[i].bt) ||
+            p[i].at < 0 || p[i].bt <= 0) {
+            cout << "Invalid input.\n";
+            return 1;
+        }
+    }
+
+    sort(p.begin(), p.end(), compare);
+
+    int time = 0;
+    double totalWT = 0, totalTAT = 0;
+
+    cout << "\nGantt Chart:\n|";
+
+    for (auto& x : p) {
+        if (time < x.at) {
+            cout << " IDLE |";
+            time = x.at;
+        }
+
+        x.st = time;
+        x.ct = time + x.bt;
+        x.tat = x.ct - x.at;
+        x.wt = x.tat - x.bt;
+        time = x.ct;
+
+        cout << " P" << x.pid << " |";
+    }
+
+    cout << "\n\nPID\tAT\tBT\tST\tCT\tTAT\tWT\n";
+
+    for (const auto& x : p) {
+        cout << "P" << x.pid << "\t"
+             << x.at << "\t" << x.bt << "\t"
+             << x.st << "\t" << x.ct << "\t"
+             << x.tat << "\t" << x.wt << "\n";
+
+        totalWT += x.wt;
+        totalTAT += x.tat;
+    }
+
+    cout << fixed << setprecision(2);
+    cout << "\nAverage Waiting Time: " << totalWT / n;
+    cout << "\nAverage Turnaround Time: " << totalTAT / n << "\n";
 
     return 0;
-
 }

@@ -1,66 +1,91 @@
+
 #include <iostream>
+#include <vector>
+#include <climits>
+#include <iomanip>
 using namespace std;
 
 struct Process {
-    int id, bt, art, rt, wt, tat;
+    int pid, at, bt, rt, st, ct, tat, wt;
 };
 
 int main() {
-    int n, completed = 0, currentTime = 0;
-    float totalWT = 0, totalTAT = 0;
-
+    int n;
     cout << "Enter number of processes: ";
-    cin >> n;
 
-    Process p[20];
+    if (!(cin >> n) || n <= 0 || n > 100)
+        return 1;
+
+    vector<Process> p(n);
+
     for (int i = 0; i < n; i++) {
-        p[i].id = i + 1;
-        cout << "Enter Arrival Time and Burst Time for P" << p[i].id << ": ";
-        cin >> p[i].art >> p[i].bt;
-        p[i].rt = p[i].bt; 
+        p[i].pid = i + 1;
+
+        cout << "Enter AT and BT of P" << i + 1 << ": ";
+
+        if (!(cin >> p[i].at >> p[i].bt) ||
+            p[i].at < 0 || p[i].bt <= 0)
+            return 1;
+
+        p[i].rt = p[i].bt;
+        p[i].st = -1;
     }
 
-    while (completed != n) {
-        int shortest = -1;
-        int minRT = 9999; // Using a large number instead of INT_MAX
+    int time = 0, completed = 0;
+    double totalWT = 0, totalTAT = 0;
 
-        // Find process with shortest remaining time that has arrived
+    while (completed < n) {
+        int idx = -1;
+
         for (int i = 0; i < n; i++) {
-            if (p[i].art <= currentTime && p[i].rt > 0 && p[i].rt < minRT) {
-                minRT = p[i].rt;
-                shortest = i;
+            if (p[i].at > time || p[i].rt <= 0)
+                continue;
+
+            if (idx == -1 ||
+                p[i].rt < p[idx].rt ||
+                (p[i].rt == p[idx].rt &&
+                 p[i].at < p[idx].at) ||
+                (p[i].rt == p[idx].rt &&
+                 p[i].at == p[idx].at &&
+                 p[i].pid < p[idx].pid)) {
+                idx = i;
             }
         }
 
-        if (shortest == -1) {
-            currentTime++;
+        if (idx == -1) {
+            time++;
             continue;
         }
 
-        // Execute for 1 unit of time
-        p[shortest].rt--;
+        if (p[idx].st == -1)
+            p[idx].st = time;
 
-        // If process finished
-        if (p[shortest].rt == 0) {
+        p[idx].rt--;
+        time++;
+
+        if (p[idx].rt == 0) {
+            p[idx].ct = time;
+            p[idx].tat = p[idx].ct - p[idx].at;
+            p[idx].wt = p[idx].tat - p[idx].bt;
             completed++;
-            int finishTime = currentTime + 1;
-            p[shortest].tat = finishTime - p[shortest].art;
-            p[shortest].wt = p[shortest].tat - p[shortest].bt;
-            
-            totalWT += p[shortest].wt;
-            totalTAT += p[shortest].tat;
         }
-        currentTime++;
     }
 
-    cout << "\nPID\tArrival\tBT\tWT\tTAT\n";
-    for (int i = 0; i < n; i++) {
-        cout << p[i].id << "\t" << p[i].art << "\t" << p[i].bt 
-             << "\t" << p[i].wt << "\t" << p[i].tat << endl;
+    cout << "\nPID\tAT\tBT\tST\tCT\tTAT\tWT\n";
+
+    for (const auto& x : p) {
+        cout << "P" << x.pid << "\t"
+             << x.at << "\t" << x.bt << "\t"
+             << x.st << "\t" << x.ct << "\t"
+             << x.tat << "\t" << x.wt << "\n";
+
+        totalWT += x.wt;
+        totalTAT += x.tat;
     }
 
+    cout << fixed << setprecision(2);
     cout << "\nAverage Waiting Time: " << totalWT / n;
-    cout << "\nAverage Turnaround Time: " << totalTAT / n << endl;
+    cout << "\nAverage Turnaround Time: " << totalTAT / n << "\n";
 
     return 0;
 }
